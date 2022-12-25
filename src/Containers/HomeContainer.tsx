@@ -9,12 +9,16 @@ import {
 } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+
 import { Brand } from '@/Components'
+
 import { useTheme } from '@/Hooks'
+
 import { useLazyFetchOneQuery } from '@/Services/modules/users'
+
 import { changeTheme, ThemeState } from '@/Store/Theme'
 
-const ExampleContainer = () => {
+const HomeContainer = () => {
   const { t } = useTranslation()
   const { Common, Fonts, Gutters, Layout } = useTheme()
   const dispatch = useDispatch()
@@ -99,4 +103,4 @@ const ExampleContainer = () => {
   )
 }
 
-export default ExampleContainer
+export default HomeContainer
