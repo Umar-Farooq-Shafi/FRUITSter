@@ -1,2 +1,2 @@
-# FRUITSter
-UoL FYP React Native Application
+# FRUITSter UoL FYP Application
+Estimation of Fruit Detection loaded on (a) tree.
