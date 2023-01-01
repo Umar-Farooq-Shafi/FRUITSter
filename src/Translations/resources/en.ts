@@ -1,5 +1,5 @@
 export default {
-  welcome: 'Welcome to React Native FRUITSter by TheCodingMachine',
+  welcome: 'Welcome to FRUITSter by Machine Learning',
   actions: {
     continue: 'Continue',
   },
