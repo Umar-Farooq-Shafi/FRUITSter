@@ -1,2 +1,6 @@
 export { default as Brand } from './Brand'
 export { default as MainNavHeader } from './MainNavHeader'
+export { default as CameraIcon } from './CameraIcon'
+export { default as CustomTabBarButton } from './CustomTabBarButton'
+export { default as HistoryIcon } from './HistoryIcon'
+export { default as HomeIcon } from './HomeIcon'

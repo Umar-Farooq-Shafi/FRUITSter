@@ -4,8 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import Logo from '@/Assets/Images/Logo.svg'
 import { useTheme } from '@/Hooks'
 
-export default function MainNavHeader(props: any) {
-  console.log(props)
+export default function MainNavHeader() {
   const { Layout } = useTheme()
 
   return (

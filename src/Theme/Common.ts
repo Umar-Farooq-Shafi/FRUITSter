@@ -27,6 +27,16 @@ export default function <C>({ Colors, ...args }: CommonParams<C>) {
         marginTop: 10,
         marginBottom: 10,
       },
+      shadow: {
+        shadowColor: '#7F5DF0',
+        shadowOffset: {
+          width: 0,
+          height: 10,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 3.4,
+        elevation: 5,
+      },
     }),
   }
 }
