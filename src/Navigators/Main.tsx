@@ -1,41 +1,95 @@
 import React from 'react'
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import { CameraContainer, HistoryContainer, HomeContainer } from '@/Containers'
 
-import { HomeContainer } from '@/Containers'
+import {
+  MainNavHeader,
+  CameraIcon,
+  HomeIcon,
+  HistoryIcon,
+  CustomTabBarButton,
+} from '@/Components'
 
-import { MainNavHeader } from '@/Components'
-import { View } from 'react-native'
+import { useTheme } from '@/Hooks'
 
 const Tab = createBottomTabNavigator()
 
 // @refresh reset
 const MainNavigator = () => {
+  const { Common } = useTheme()
+
   return (
-    <Tab.Navigator
-      defaultScreenOptions={{
-        tabBarActiveBackgroundColor: '#FAAD17',
-        tabBarInactiveBackgroundColor: '#FAAD17',
-        tabBarStyle: {
-          backgroundColor: '#FAAD17',
-        },
-        tabBarLabelStyle: {
-          backgroundColor: '#FAAD17',
-        },
-      }}
-    >
+    <Tab.Navigator initialRouteName="Home">
       <Tab.Screen
-        name="Home"
-        component={HomeContainer}
+        name="Camera"
+        component={CameraContainer}
         options={{
-          headerTitle: MainNavHeader,
-          tabBarIcon: () => <Ionicons name="home" size={20} color={'#fff'} />,
+          headerShown: false,
+          tabBarIcon: ({ focused }) => <CameraIcon focused={focused} />,
           headerStyle: {
             height: 150,
           },
           headerTitleAlign: 'center',
           tabBarShowLabel: false,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 20,
+            left: 20,
+            right: 20,
+            borderRadius: 15,
+            height: 70,
+            backgroundColor: '#FAAD17',
+            ...Common.shadow,
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Home"
+        component={HomeContainer}
+        options={{
+          headerTitle: MainNavHeader,
+          tabBarIcon: ({ focused }) => <HomeIcon focused={focused} />,
+          tabBarButton: props => <CustomTabBarButton {...props} />,
+          headerStyle: {
+            height: 150,
+          },
+          headerTitleAlign: 'center',
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 20,
+            left: 20,
+            right: 20,
+            borderRadius: 15,
+            height: 70,
+            backgroundColor: '#FAAD17',
+            ...Common.shadow,
+          },
+        }}
+      />
+      <Tab.Screen
+        name="History"
+        component={HistoryContainer}
+        options={{
+          headerTitle: MainNavHeader,
+          tabBarIcon: ({ focused }) => <HistoryIcon focused={focused} />,
+          headerStyle: {
+            height: 150,
+          },
+          headerTitleAlign: 'center',
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 20,
+            left: 20,
+            right: 20,
+            borderRadius: 15,
+            height: 70,
+            backgroundColor: '#FAAD17',
+            ...Common.shadow,
+          },
         }}
       />
     </Tab.Navigator>
