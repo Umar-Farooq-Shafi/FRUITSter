@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react'
 import { ActivityIndicator, View, Text } from 'react-native'
+
 import { useTranslation } from 'react-i18next'
+
 import { useTheme } from '@/Hooks'
+
 import { Brand } from '@/Components'
+
 import { setDefaultTheme } from '@/Store/Theme'
+
 import { navigateAndSimpleReset } from '@/Navigators/utils'
 
 const StartupContainer = () => {

@@ -1,104 +1,159 @@
-import React, { useState, useEffect } from 'react'
-import {
-  View,
-  ActivityIndicator,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native'
-import { useDispatch } from 'react-redux'
-import { useTranslation } from 'react-i18next'
+import React from 'react'
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+// import { useTranslation } from 'react-i18next'
 
-import { Brand } from '@/Components'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useTheme } from '@/Hooks'
 
-import { useLazyFetchOneQuery } from '@/Services/modules/users'
+import Apple from '@/Assets/Images/Apple.svg'
+import Mango from '@/Assets/Images/Mango.svg'
+import Orange from '@/Assets/Images/Orange.svg'
+import Pear from '@/Assets/Images/Pear.svg'
 
-import { changeTheme, ThemeState } from '@/Store/Theme'
+import { navigate } from '@/Navigators/utils'
 
 const HomeContainer = () => {
-  const { t } = useTranslation()
-  const { Common, Fonts, Gutters, Layout } = useTheme()
-  const dispatch = useDispatch()
+  // const { t } = useTranslation()
+  const { Fonts, Gutters, Layout } = useTheme()
+  // const dispatch = useDispatch()
 
-  const [userId, setUserId] = useState('9')
-  const [fetchOne, { data, isSuccess, isLoading, isFetching, error }] =
-    useLazyFetchOneQuery()
+  // const [userId, setUserId] = useState('9')
+  // const [fetchOne, { data, isSuccess, isLoading, isFetching, error }] =
+  //   useLazyFetchOneQuery()
 
-  useEffect(() => {
-    fetchOne(userId)
-  }, [fetchOne, userId])
+  // useEffect(() => {
+  //   fetchOne(userId)
+  // }, [fetchOne, userId])
 
-  const onChangeTheme = ({ theme, darkMode }: Partial<ThemeState>) => {
-    dispatch(changeTheme({ theme, darkMode }))
-  }
+  // const onChangeTheme = ({ theme, darkMode }: Partial<ThemeState>) => {
+  //   dispatch(changeTheme({ theme, darkMode }))
+  // }
 
   return (
     <ScrollView
       style={Layout.fill}
       contentContainerStyle={[
-        Layout.fill,
-        Layout.colCenter,
-        Gutters.smallHPadding,
+        Gutters.largeHPadding,
+        Gutters.largeVPadding,
+        {
+          borderRadius: 30,
+          backgroundColor: 'rgba(217, 217, 217, 0.25)',
+        },
       ]}
     >
+      <Text style={[Fonts.textRegular, { fontWeight: '600' }]}>
+        Select Fruit Type
+      </Text>
+
       <View style={[[Layout.colCenter, Gutters.smallHPadding]]}>
-        <Brand />
-        {(isLoading || isFetching) && <ActivityIndicator />}
-        {!isSuccess ? (
-          <Text style={Fonts.textRegular}>{error}</Text>
-        ) : (
-          <Text style={Fonts.textRegular}>
-            {t('example.helloUser', { name: data?.name })}
-          </Text>
-        )}
+        <View
+          style={[
+            Layout.row,
+            Layout.rowHCenter,
+            Gutters.smallHPadding,
+            Layout.fullWidth,
+            Layout.justifyContentBetween,
+            Gutters.largeTMargin,
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              borderRadius: 10,
+              backgroundColor: '#EA6D6D',
+              padding: 20,
+            }}
+            onPress={() =>
+              navigate('Fruit', {
+                type: 'apple',
+              })
+            }
+          >
+            <Apple width={100} height={100} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              borderRadius: 10,
+              backgroundColor: '#FAAD17',
+              padding: 20,
+            }}
+            onPress={() =>
+              navigate('Fruit', {
+                type: 'orange',
+              })
+            }
+          >
+            <Orange width={100} height={100} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View
-        style={[
-          Layout.row,
-          Layout.rowHCenter,
-          Gutters.smallHPadding,
-          Gutters.largeVMargin,
-          Common.backgroundPrimary,
-        ]}
-      >
-        <Text style={[Layout.fill, Fonts.textCenter, Fonts.textSmall]}>
-          {t('example.labels.userId')}
-        </Text>
-        <TextInput
-          onChangeText={setUserId}
-          editable={!isLoading}
-          keyboardType={'number-pad'}
-          maxLength={1}
-          value={userId}
-          selectTextOnFocus
-          style={[Layout.fill, Common.textInput]}
-        />
+
+      <View style={[[Layout.colCenter, Gutters.smallHPadding]]}>
+        <View
+          style={[
+            Layout.row,
+            Layout.rowHCenter,
+            Gutters.smallHPadding,
+            Layout.fullWidth,
+            Layout.justifyContentBetween,
+            Gutters.largeTMargin,
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              borderRadius: 10,
+              backgroundColor: '#FFE24B',
+              padding: 20,
+            }}
+            onPress={() =>
+              navigate('Fruit', {
+                type: 'mango',
+              })
+            }
+          >
+            <Mango width={100} height={100} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              borderRadius: 10,
+              backgroundColor: '#AED12C',
+              padding: 20,
+            }}
+            onPress={() =>
+              navigate('Fruit', {
+                type: 'pear',
+              })
+            }
+          >
+            <Pear width={100} height={100} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <Text style={[Fonts.textRegular, Gutters.smallBMargin]}>DarkMode :</Text>
 
-      <TouchableOpacity
-        style={[Common.button.rounded, Gutters.regularBMargin]}
-        onPress={() => onChangeTheme({ darkMode: null })}
-      >
-        <Text style={Fonts.textRegular}>Auto</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[Common.button.outlineRounded, Gutters.regularBMargin]}
-        onPress={() => onChangeTheme({ darkMode: true })}
-      >
-        <Text style={Fonts.textRegular}>Dark</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[Common.button.outline, Gutters.regularBMargin]}
-        onPress={() => onChangeTheme({ darkMode: false })}
-      >
-        <Text style={Fonts.textRegular}>Light</Text>
-      </TouchableOpacity>
+      <View style={[[Layout.colCenter, Gutters.smallHPadding]]}>
+        <View
+          style={[
+            Layout.row,
+            Layout.rowHCenter,
+            Gutters.smallHPadding,
+            Layout.fullWidth,
+            Layout.justifyContentBetween,
+            Gutters.largeTMargin,
+            { marginBottom: 80 },
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              borderRadius: 10,
+              backgroundColor: '#60CCB9',
+              padding: 20,
+            }}
+          >
+            <MaterialCommunityIcons name="history" size={80} />
+          </TouchableOpacity>
+          <View />
+        </View>
+      </View>
     </ScrollView>
   )
 }
