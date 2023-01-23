@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "950376674420",
+    "project_id": "fruitster-21258",
+    "storage_bucket": "fruitster-21258.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950376674420:android:9cf00944946b682b5f8d21",
+        "android_client_info": {
+          "package_name": "com.fruitster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950376674420-nnim0ks8fjhdk4od4f1qadpivd99tem3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBB5-rk8V3e_xd5oLNMzLAkTiGTDrRuPi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950376674420-nnim0ks8fjhdk4od4f1qadpivd99tem3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,7 +21,12 @@ const MainNavigator = () => {
   const { Common } = useTheme()
 
   return (
-    <Tab.Navigator initialRouteName="Home">
+    <Tab.Navigator
+      initialRouteName="Home"
+      sceneContainerStyle={{
+        backgroundColor: '#fff',
+      }}
+    >
       <Tab.Screen
         name="Camera"
         component={CameraContainer}

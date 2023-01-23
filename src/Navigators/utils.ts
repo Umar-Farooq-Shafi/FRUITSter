@@ -9,14 +9,19 @@ import {
   createNavigationContainerRef,
 } from '@react-navigation/native'
 
-type RootStackParamList = {
+export type RootStackParamList = {
   Startup: undefined
   Home: undefined
+  Fruit: {
+    type: string
+  }
+  Camera: undefined
+  History: undefined
 }
 
 export const navigationRef = createNavigationContainerRef<RootStackParamList>()
 
-export function navigate(name: keyof RootStackParamList, params: any) {
+export function navigate(name: keyof RootStackParamList, params: any = {}) {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params)
   }

@@ -1,5 +1,6 @@
 export default {
   welcome: 'Welcome to FRUITSter by Machine Learning',
+  selectFruit: 'Select Fruit Type',
   actions: {
     continue: 'Continue',
   },
