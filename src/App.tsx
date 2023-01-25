@@ -3,6 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { PersistGate } from 'redux-persist/lib/integration/react'
+import Toast from 'react-native-toast-message'
 
 import { store, persistor } from '@/Store'
 import ApplicationNavigator from '@/Navigators/Application'
@@ -21,6 +22,8 @@ const App = () => (
     <PersistGate loading={null} persistor={persistor}>
       <ApplicationNavigator />
     </PersistGate>
+
+    <Toast />
   </Provider>
 )
 
