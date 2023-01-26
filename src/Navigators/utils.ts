@@ -17,6 +17,10 @@ export type RootStackParamList = {
   }
   Camera: undefined
   History: undefined
+  Info: {
+    trees: number
+    imageUrl: string
+  }
 }
 
 export const navigationRef = createNavigationContainerRef<RootStackParamList>()

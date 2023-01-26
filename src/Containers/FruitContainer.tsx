@@ -22,7 +22,7 @@ import RadioButton from '@/Components/RadioButton'
 
 import Tree from '@/Assets/Images/Tree.svg'
 
-import { RootStackParamList } from '@/Navigators/utils'
+import { RootStackParamList, navigate } from '@/Navigators/utils'
 
 type Props = StackScreenProps<RootStackParamList, 'Fruit'>
 
@@ -57,13 +57,12 @@ export default function FruitContainer({ route }: Props) {
   }
 
   const uploadImage = async (uri: string) => {
+    const filename = uri.substring(uri.lastIndexOf('/') + 1)
     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
 
     setUploading(true)
     setTransferred(0)
-    const task = storage()
-      .ref('gs://fruitster-21258.appspot.com')
-      .putFile(uploadUri)
+    const task = storage().ref(filename).putFile(uploadUri)
 
     // set progress state
     task.on(
@@ -91,7 +90,10 @@ export default function FruitContainer({ route }: Props) {
           text2: 'Your images uploaded successfully.',
         })
         task.snapshot?.ref.getDownloadURL().then(function (downloadURL) {
-          console.log(downloadURL)
+          navigate('Info', {
+            trees: isSingle[0].selected ? 1 : parseInt(numberOfTrees, 10),
+            imageUrl: downloadURL,
+          })
         })
       },
     )
@@ -169,12 +171,13 @@ export default function FruitContainer({ route }: Props) {
       {isSingle[1].selected && (
         <View style={{ marginBottom: 20 }}>
           <Text style={[Fonts.textRegular, { fontWeight: '400' }]}>
-            Select number of images
+            Select number of trees
           </Text>
 
           <TextInput
             defaultValue={numberOfTrees}
             onChangeText={setNumberOfTrees}
+            keyboardType="numeric"
             style={{
               backgroundColor: '#D9D9D9',
               borderRadius: 20,

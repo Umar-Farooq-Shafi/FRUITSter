@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import { FruitContainer, StartupContainer } from '@/Containers'
+import { FruitContainer, StartupContainer, InfoContainer } from '@/Containers'
 
 import FruitNavHeader from '@/Components/FruitNavHeader'
 
@@ -74,6 +74,11 @@ const ApplicationNavigator = () => {
             name="Startup"
             component={StartupContainer}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Info"
+            component={InfoContainer}
+            options={{ title: 'Information' }}
           />
           <Stack.Screen
             name="Main"
