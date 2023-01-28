@@ -93,6 +93,7 @@ export default function FruitContainer({ route }: Props) {
           navigate('Info', {
             trees: isSingle[0].selected ? 1 : parseInt(numberOfTrees, 10),
             imageUrl: downloadURL,
+            type: route.params?.type,
           })
         })
       },

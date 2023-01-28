@@ -20,6 +20,7 @@ export type RootStackParamList = {
   Info: {
     trees: number
     imageUrl: string
+    type: string
   }
 }
 
