@@ -78,7 +78,7 @@ const MainNavigator = () => {
         name="History"
         component={HistoryContainer}
         options={{
-          headerTitle: MainNavHeader,
+          headerShown: false,
           tabBarIcon: ({ focused }) => <HistoryIcon focused={focused} />,
           headerStyle: {
             height: 150,
