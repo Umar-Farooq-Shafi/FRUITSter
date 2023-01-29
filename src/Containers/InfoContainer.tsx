@@ -7,6 +7,7 @@ import {
   Platform,
   StyleSheet,
   TouchableHighlight,
+  ActivityIndicator,
 } from 'react-native'
 import React, { useState } from 'react'
 
@@ -17,15 +18,12 @@ import Toast from 'react-native-toast-message'
 import { launchCamera } from 'react-native-image-picker'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import * as Progress from 'react-native-progress'
+import firestore from '@react-native-firebase/firestore'
+import { getUniqueId } from 'react-native-device-info'
 
-import { RootStackParamList } from '@/Navigators/utils'
+import { navigate, RootStackParamList } from '@/Navigators/utils'
 
 import { useTheme } from '@/Hooks'
-
-import {
-  usePredictAppleMutation,
-  usePredictOrangeMutation,
-} from '@/Services/modules/robo'
 
 type Props = StackScreenProps<RootStackParamList, 'Info'>
 
@@ -50,9 +48,8 @@ export default function InfoContainer({ route }: Props) {
   const { Fonts, Gutters, Layout } = useTheme()
   const [uploading, setUploading] = useState(false)
   const [transferred, setTransferred] = useState(0)
-
-  const [predictApple, { isLoading: isUpdating }] = usePredictAppleMutation()
-  const [predictOrange, { isLoading: isUpdating2 }] = usePredictOrangeMutation()
+  const [isEstimating, setIsEstimating] = useState(false)
+  const [totals, setTotals] = useState(1)
 
   const uploadImage = async (uri: string, pictureNo: number) => {
     const filename = uri.substring(uri.lastIndexOf('/') + 1)
@@ -62,7 +59,6 @@ export default function InfoContainer({ route }: Props) {
     setTransferred(0)
     const task = storage().ref(filename).putFile(uploadUri)
 
-    console.log(pictureNo)
     // set progress state
     task.on(
       'state_changed',
@@ -90,10 +86,12 @@ export default function InfoContainer({ route }: Props) {
         })
         task.snapshot?.ref.getDownloadURL().then(function (downloadURL) {
           const indexImages = [...imageSet]
-          indexImages[pictureNo].push({ uri: downloadURL })
-          console.log(indexImages[pictureNo])
+          const item = [...indexImages[pictureNo]]
+          item.push({ uri: downloadURL })
+          indexImages[pictureNo] = item
 
           setImageSet(indexImages)
+          setTotals(totals + 1)
         })
       },
     )
@@ -117,91 +115,156 @@ export default function InfoContainer({ route }: Props) {
           Toast.show({
             type: 'error',
             text1: 'Something went wrong',
-            text2: 'You may need access the camera permissions in app setting.',
+            text2:
+              'You might need to change camera permissions in app setting.',
           })
         }
       },
     )
   }
 
-  const predictCount = () => {
-    if (type === 'apple') {
-      predictApple(
-        'https://lh3.googleusercontent.com/u/0/drive-viewer/AAOQEOR5frvPxS5Lj6VHhrqmvvVkFWpHyh2Lc8I7gp5u5A7IZCb1nHXxRWLi0ZzbGCbtdMp8BsAP4N2GO96cu8EIonK4ym9RWA=w2880-h1642',
-      )
-        .then(console.log)
-        .catch(console.error)
-    } else if (type === 'orange') {
-      predictOrange(
-        'https://lh3.googleusercontent.com/u/0/drive-viewer/AAOQEOR5frvPxS5Lj6VHhrqmvvVkFWpHyh2Lc8I7gp5u5A7IZCb1nHXxRWLi0ZzbGCbtdMp8BsAP4N2GO96cu8EIonK4ym9RWA=w2880-h1642',
-      )
-        .then(console.log)
-        .catch(console.error)
+  const predictCount = async () => {
+    for (let i = 0; i < imageSet.length; ++i) {
+      if (imageSet[i].length < 2) {
+        Toast.show({
+          type: 'error',
+          text1: 'Missing',
+          text2: 'Every tree image should be at least 2.',
+        })
+
+        return
+      }
     }
+
+    const classes = type[0].toUpperCase() + type.substring(1, type.length)
+    let count = 0
+    imageSet.forEach((images: any[]) => {
+      images.forEach(imageOb => {
+        setIsEstimating(true)
+        fetch(
+          `https://detect.roboflow.com/fruit-detection-ml-uol/9?classes=${classes}&api_key=tW67WEmjEnSeRqdpKp8v&image=${imageOb.uri}&labels=true`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+          .then(async res => {
+            const result = await res.json()
+
+            firestore()
+              .collection('Users')
+              .add({
+                deviceId: await getUniqueId(),
+                detected: result.predictions?.length,
+                predictions: result.predictions,
+                estimation: 0,
+                classes,
+                createdAt: new Date(Date.now()),
+                fileName: imageOb.uri,
+              })
+              .then(() => {
+                setIsEstimating(false)
+                console.log('added')
+                count++
+
+                if (count === totals) {
+                  navigate('History')
+                }
+              })
+              .catch(console.error)
+          })
+          .catch(error => {
+            console.error(error)
+
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2:
+                typeof error === 'string' ? error : 'Something went wrong.',
+            })
+          })
+      })
+    })
   }
 
   return (
-    <ScrollView
-      style={Layout.fill}
-      contentContainerStyle={[
-        Gutters.largeHPadding,
-        Gutters.largeVPadding,
-        {
-          backgroundColor: 'rgba(217, 217, 217, 0.25)',
-        },
-      ]}
-    >
-      <Text style={[Fonts.textSmall, { marginBottom: 10, fontWeight: '600' }]}>
-        Note: Every tree image should be at least 2 and maximum as many as.
-      </Text>
+    <ScrollView style={Layout.fill} contentContainerStyle={[styles.main]}>
+      {isEstimating && (
+        <View style={styles.loading}>
+          <ActivityIndicator size={'large'} color={'#0F0'} />
 
-      {imageSet?.map((value: any, index: number) => (
-        <View key={index}>
           <Text
-            style={[Fonts.textSmall, { marginBottom: 10, fontWeight: '400' }]}
+            style={[
+              Fonts.textCenter,
+              Fonts.textRegular,
+              styles.note,
+              styles.loadingText,
+            ]}
           >
-            Pictures of {index + 1} tree
+            Processing...
           </Text>
-
-          <View style={styles.container}>
-            {value.map((item: any, index2: number) => (
-              <View style={styles.item} key={index2}>
-                <Image
-                  source={{ uri: item.uri }}
-                  style={{ width: 90, height: 90, borderRadius: 10 }}
-                />
-              </View>
-            ))}
-
-            <TouchableOpacity
-              style={[styles.item, styles.uploadContainer]}
-              disabled={uploading}
-              onPress={() => captureImage(index)}
-            >
-              <MaterialCommunityIcons size={80} name={'file-upload'} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      ))}
-
-      <TouchableHighlight
-        style={styles.submit}
-        onPress={predictCount}
-        underlayColor="#fff"
-      >
-        <Text style={[styles.submitText]}>Estimate Counts</Text>
-      </TouchableHighlight>
-
-      {uploading && (
-        <View style={styles.progressBarContainer}>
-          <Progress.Bar progress={transferred} width={300} />
         </View>
       )}
+
+      <View style={[Gutters.largeHPadding, Gutters.largeVPadding]}>
+        <Text style={[Fonts.textSmall, styles.note]}>
+          Note: Every tree image should be at least 2 and maximum as many as.
+        </Text>
+
+        {uploading && (
+          <View
+            style={styles.progressBarContainer}
+            accessibilityRole="progressbar"
+          >
+            <Progress.Bar progress={transferred} width={350} />
+          </View>
+        )}
+
+        {imageSet?.map((value: any, index: number) => (
+          <View key={index}>
+            <Text style={[Fonts.textSmall, styles.info]}>
+              Pictures of {index + 1} tree
+            </Text>
+
+            <View style={styles.container}>
+              {value.map((item: any, index2: number) => (
+                <View style={styles.item} key={index2}>
+                  <Image source={{ uri: item.uri }} style={styles.image} />
+                </View>
+              ))}
+
+              <TouchableOpacity
+                style={[styles.item, styles.uploadContainer]}
+                disabled={uploading}
+                onPress={() => captureImage(index)}
+              >
+                <MaterialCommunityIcons size={80} name={'file-upload'} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+
+        <TouchableHighlight
+          style={styles.submit}
+          onPress={predictCount}
+          underlayColor="#fff"
+        >
+          <Text style={[styles.submitText]}>Estimate Counts</Text>
+        </TouchableHighlight>
+      </View>
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
+  main: {
+    backgroundColor: 'rgba(217, 217, 217, 0.25)',
+  },
+  note: { marginBottom: 10, fontWeight: '600' },
+  info: { marginBottom: 10, fontWeight: '400' },
+  image: { width: 90, height: 90, borderRadius: 10 },
   container: {
     flex: 1,
     flexDirection: 'row',
@@ -214,7 +277,17 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   progressBarContainer: {
-    marginTop: 20,
+    marginVertical: 10,
+  },
+  loadingText: { color: '#0F0' },
+  loading: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    zIndex: 1,
+    backgroundColor: '#00000040',
   },
   uploadContainer: {
     width: 90,

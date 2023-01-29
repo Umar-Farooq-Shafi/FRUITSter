@@ -1,10 +1,13 @@
 import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions'
 
 export default (build: EndpointBuilder<any, any, any>) =>
-  build.mutation<Prediction, string>({
-    query: imageUrl => ({
-      url: `?classes=Apple&api_key=tW67WEmjEnSeRqdpKp8v&image=${imageUrl}`,
+  build.mutation<Prediction, Partial<{ classes: string; imageUrl: string }>>({
+    query: ({ classes, imageUrl }) => ({
+      url: `?classes=${classes}&api_key=tW67WEmjEnSeRqdpKp8v&image=${imageUrl}`,
       method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
     }),
   })
 

@@ -1,5 +1,5 @@
 const presets = ['module:metro-react-native-babel-preset']
-const plugins = []
+const plugins = ['react-native-paper/babel']
 
 plugins.push(
   [

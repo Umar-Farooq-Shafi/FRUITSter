@@ -1,14 +1,12 @@
 import { api } from '@/Services/api'
 
-import predictApple from './predictApple'
-import predictOrange from './predictOrange'
+import predict from './predict'
 
 export const roboFlowApi = api.injectEndpoints({
     endpoints: build => ({
-        predictApple: predictApple(build),
-        predictOrange: predictOrange(build),
+        predict: predict(build),
     }),
     overrideExisting: false,
 })
 
-export const { usePredictAppleMutation, usePredictOrangeMutation } = roboFlowApi
+export const { usePredictMutation } = roboFlowApi
