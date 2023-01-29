@@ -129,7 +129,7 @@ export default function FruitContainer({ route }: Props) {
     <ScrollView
       style={Layout.fill}
       contentContainerStyle={[
-        Gutters.largeHPadding,
+        Gutters.smallHPadding,
         Gutters.largeVPadding,
         Layout.alignItemsCenter,
       ]}
@@ -141,7 +141,7 @@ export default function FruitContainer({ route }: Props) {
       <View
         style={[
           Layout.justifyContentBetween,
-          { flexDirection: 'row', marginTop: 20, width: '95%' },
+          { flexDirection: 'row', marginTop: 20, width: '90%' },
         ]}
       >
         <View style={styles.treeContainer}>
@@ -155,7 +155,7 @@ export default function FruitContainer({ route }: Props) {
       <View
         style={[
           Layout.justifyContentBetween,
-          { flexDirection: 'row', marginVertical: 20, width: '90%' },
+          { flexDirection: 'row', marginVertical: 20, width: '80%' },
         ]}
       >
         {isSingle.map(item => (

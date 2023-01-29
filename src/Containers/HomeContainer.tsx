@@ -1,5 +1,11 @@
-import React from 'react'
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import React, { useEffect } from 'react'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  BackHandler,
+} from 'react-native'
 // import { useTranslation } from 'react-i18next'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -22,9 +28,19 @@ const HomeContainer = () => {
   // const [fetchOne, { data, isSuccess, isLoading, isFetching, error }] =
   //   useLazyFetchOneQuery()
 
-  // useEffect(() => {
-  //   fetchOne(userId)
-  // }, [fetchOne, userId])
+  useEffect(() => {
+    const backAction = () => {
+      BackHandler.exitApp()
+      return true
+    }
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    )
+
+    return () => backHandler.remove()
+  })
 
   // const onChangeTheme = ({ theme, darkMode }: Partial<ThemeState>) => {
   //   dispatch(changeTheme({ theme, darkMode }))
@@ -51,7 +67,7 @@ const HomeContainer = () => {
           style={[
             Layout.row,
             Layout.rowHCenter,
-            Gutters.smallHPadding,
+            // Gutters.smallHPadding,
             Layout.fullWidth,
             Layout.justifyContentBetween,
             Gutters.largeTMargin,
@@ -93,7 +109,7 @@ const HomeContainer = () => {
           style={[
             Layout.row,
             Layout.rowHCenter,
-            Gutters.smallHPadding,
+            // Gutters.smallHPadding,
             Layout.fullWidth,
             Layout.justifyContentBetween,
             Gutters.largeTMargin,
@@ -135,7 +151,7 @@ const HomeContainer = () => {
           style={[
             Layout.row,
             Layout.rowHCenter,
-            Gutters.smallHPadding,
+            // Gutters.smallHPadding,
             Layout.fullWidth,
             Layout.justifyContentBetween,
             Gutters.largeTMargin,
