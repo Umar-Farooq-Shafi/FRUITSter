@@ -2,39 +2,36 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
-  TouchableHighlight,
   Platform,
+  Dimensions,
 } from 'react-native'
 import React, { useState } from 'react'
+import { Button, ProgressBar, TextInput, RadioButton } from 'react-native-paper'
 
 import { StackScreenProps } from '@react-navigation/stack'
 import { launchCamera } from 'react-native-image-picker'
 import Toast from 'react-native-toast-message'
-import * as Progress from 'react-native-progress'
 
 import storage from '@react-native-firebase/storage'
 
 import { useTheme } from '@/Hooks'
 
-import RadioButton from '@/Components/RadioButton'
-
 import Tree from '@/Assets/Images/Tree.svg'
 
 import { RootStackParamList, navigate } from '@/Navigators/utils'
+
+const { width } = Dimensions.get('screen')
 
 type Props = StackScreenProps<RootStackParamList, 'Fruit'>
 
 export default function FruitContainer({ route }: Props) {
   const { Fonts, Gutters, Layout } = useTheme()
-  const [isSingle, setIsSingle] = useState([
-    { id: 1, value: true, name: 'Single Tree', selected: true },
-    { id: 2, value: false, name: 'Multiple Tree', selected: false },
-  ])
+
   const [numberOfTrees, setNumberOfTrees] = useState('4')
   const [uploading, setUploading] = useState(false)
   const [transferred, setTransferred] = useState(0)
+  const [type, setType] = useState('first')
 
   const color =
     route.params?.type === 'apple'
@@ -46,15 +43,6 @@ export default function FruitContainer({ route }: Props) {
       : route.params?.type === 'pear'
       ? '#AED12C'
       : '#0f0'
-
-  const onRadioBtnClick = (item: any) => {
-    let updatedState = isSingle.map(isLikedItem =>
-      isLikedItem.id === item.id
-        ? { ...isLikedItem, selected: true }
-        : { ...isLikedItem, selected: false },
-    )
-    setIsSingle(updatedState)
-  }
 
   const uploadImage = async (uri: string) => {
     const filename = uri.substring(uri.lastIndexOf('/') + 1)
@@ -69,7 +57,7 @@ export default function FruitContainer({ route }: Props) {
       'state_changed',
       snapshot => {
         setTransferred(
-          Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 10000,
+          Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 1,
         )
       },
       error => {
@@ -91,7 +79,7 @@ export default function FruitContainer({ route }: Props) {
         })
         task.snapshot?.ref.getDownloadURL().then(function (downloadURL) {
           navigate('Info', {
-            trees: isSingle[0].selected ? 1 : parseInt(numberOfTrees, 10),
+            trees: type === 'single' ? 1 : parseInt(numberOfTrees, 10),
             imageUrl: downloadURL,
             type: route.params?.type,
           })
@@ -138,73 +126,72 @@ export default function FruitContainer({ route }: Props) {
         Select number of trees
       </Text>
 
-      <View
-        style={[
-          Layout.justifyContentBetween,
-          { flexDirection: 'row', marginTop: 20, width: '90%' },
-        ]}
-      >
-        <View style={styles.treeContainer}>
-          <Tree />
+      <RadioButton.Group onValueChange={setType} value={type}>
+        <View style={[Layout.justifyContentAround, styles.buttonsContainer]}>
+          <View>
+            <View style={[styles.treeContainer]}>
+              <Tree />
+            </View>
+
+            <View style={[Layout.rowCenter, Gutters.smallTPadding]}>
+              <RadioButton
+                value="single"
+                color={'#7EE26E'}
+                status={'checked'}
+              />
+              <Text>Single Tree</Text>
+            </View>
+          </View>
+          <View>
+            <View style={[styles.treeContainer]}>
+              <Tree />
+            </View>
+
+            <View style={[Layout.rowCenter, Gutters.smallTPadding]}>
+              <RadioButton value="multiple" color={'#7EE26E'} />
+              <Text>Multiple Tree</Text>
+            </View>
+          </View>
         </View>
-        <View style={[styles.treeContainer]}>
-          <Tree />
-        </View>
-      </View>
+      </RadioButton.Group>
 
-      <View
-        style={[
-          Layout.justifyContentBetween,
-          { flexDirection: 'row', marginVertical: 20, width: '80%' },
-        ]}
-      >
-        {isSingle.map(item => (
-          <RadioButton
-            onPress={() => onRadioBtnClick(item)}
-            selected={item.selected}
-            key={item.id}
-          >
-            {item.name}
-          </RadioButton>
-        ))}
-      </View>
-
-      {isSingle[1].selected && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={[Fonts.textRegular, { fontWeight: '400' }]}>
-            Select number of trees
-          </Text>
-
+      {type === 'multiple' && (
+        <View style={styles.textInputContainer}>
           <TextInput
-            defaultValue={numberOfTrees}
+            value={numberOfTrees}
             onChangeText={setNumberOfTrees}
+            label={'Select number of trees'}
             keyboardType="numeric"
-            style={{
-              backgroundColor: '#D9D9D9',
-              borderRadius: 20,
-              paddingHorizontal: 15,
-              marginTop: 20,
+            mode={'outlined'}
+            contentStyle={{
+              width: width * 0.8,
             }}
+            activeOutlineColor={'#7EE26E'}
           />
         </View>
       )}
 
-      <TouchableHighlight
-        style={[
-          styles.submit,
-          {
-            backgroundColor: color,
-          },
-        ]}
+      <Button
+        icon="camera"
+        mode="contained-tonal"
+        buttonColor={color}
+        textColor={'#fff'}
+        loading={uploading}
+        disabled={uploading}
+        uppercase
+        contentStyle={styles.submit}
         onPress={captureImage}
-        underlayColor="#fff"
       >
-        <Text style={[styles.submitText]}>Capture Images</Text>
-      </TouchableHighlight>
+        Capture Image
+      </Button>
 
       {uploading && (
         <View style={styles.progressBarContainer}>
-          <Progress.Bar progress={transferred} width={300} color={color} />
+          <ProgressBar
+            style={styles.progressBar}
+            progress={transferred}
+            color={color}
+          />
         </View>
       )}
     </ScrollView>
@@ -212,17 +199,22 @@ export default function FruitContainer({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  treeContainer: { backgroundColor: '#7EE26E', borderRadius: 20, padding: 30 },
+  buttonsContainer: {
+    flexDirection: 'row',
+    width,
+    marginVertical: 20,
+  },
+  textInputContainer: {
+    marginBottom: 20,
+  },
+  treeContainer: {
+    backgroundColor: '#7EE26E',
+    borderRadius: 20,
+    padding: 30,
+  },
   submit: {
-    marginRight: 40,
-    marginLeft: 40,
-    marginTop: 10,
-    paddingTop: 20,
-    paddingBottom: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    width: 150,
-    borderColor: '#fff',
+    marginVertical: 8,
+    width: width * 0.5,
   },
   submitText: {
     color: '#fff',
@@ -232,5 +224,9 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     marginTop: 20,
+  },
+  progressBar: {
+    width: width * 0.8,
+    height: 4,
   },
 })
